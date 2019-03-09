@@ -3,6 +3,7 @@ package com.dusov;
 import com.dusov.User;
 import com.dusov.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,7 @@ public class UserController {
 
     @GetMapping("/add")
     public @ResponseBody
-    String addNewUser (@RequestParam String name
-            , @RequestParam String surname, @RequestParam Integer age, @RequestParam String address) {
+    String addNewUser (@RequestParam String name, @RequestParam(required = false) String surname, @RequestParam Integer age, @RequestParam String address) {
 
         User n = new User();
         n.setName(name);
