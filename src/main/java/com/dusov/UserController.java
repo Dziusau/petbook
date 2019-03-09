@@ -12,5 +12,21 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    
+    @GetMapping("/add")
+    public @ResponseBody
+    String addNewUser (@RequestParam String name
+            , @RequestParam String surname, @RequestParam Integer age, @RequestParam String address) {
+
+        User n = new User();
+        n.setName(name);
+        n.setSurname(surname);
+        n.setAge(age);
+        n.setAddress(address);
+        userRepository.save(n);
+        return "Saved";
+    }
+    @GetMapping("/all")
+    public @ResponseBody Iterable<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }
