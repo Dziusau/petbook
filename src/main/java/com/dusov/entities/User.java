@@ -1,4 +1,4 @@
-package com.dusov.user;
+package com.dusov.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

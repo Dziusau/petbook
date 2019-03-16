@@ -1,8 +1,8 @@
-package com.dusov.pet;
+package com.dusov.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.dusov.pet.Pet;
+import com.dusov.entities.Pet;
 
 public interface PetRepository extends CrudRepository<Pet, Integer> {
 }

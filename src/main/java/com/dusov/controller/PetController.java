@@ -1,6 +1,7 @@
-package com.dusov.pet;
+package com.dusov.controller;
 
-import com.dusov.user.User;
+import com.dusov.entities.Pet;
+import com.dusov.repositories.PetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/demo")
+@RequestMapping("/pet")
 public class PetController {
     @Autowired
     private PetRepository petRepository;
 
     @GetMapping("/add")
     public @ResponseBody
-    String addNewPet (@RequestParam String name, @RequestParam(required = false) String gender, @RequestParam Integer age) {
+    String addNewPet (@RequestParam String name, @RequestParam(required = false) String gender, @RequestParam(required = false) Integer age) {
 
         Pet a = new Pet();
         a.setName(name);
@@ -26,7 +27,7 @@ public class PetController {
         return "Saved";
     }
     @GetMapping("/all")
-    public @ResponseBody Iterable<Pet> getAllUsers() {
+    public @ResponseBody Iterable<Pet> getAllPets() {
         return petRepository.findAll();
     }
 }
