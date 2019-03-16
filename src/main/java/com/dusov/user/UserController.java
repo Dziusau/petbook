@@ -1,9 +1,6 @@
-package com.dusov;
+package com.dusov.user;
 
-import com.dusov.User;
-import com.dusov.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +26,4 @@ public class UserController {
     public @ResponseBody Iterable<User> getAllUsers() {
         return userRepository.findAll();
     }
-
 }
