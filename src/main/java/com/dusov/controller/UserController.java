@@ -3,9 +3,11 @@ package com.dusov.controller;
 import com.dusov.entities.User;
 import com.dusov.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Controller
@@ -16,9 +18,8 @@ public class UserController {
 
     @GetMapping("/add")
     public @ResponseBody
-    String addNewUser (@RequestParam Integer id, @RequestParam String name, @RequestParam(required = false) String surname, @RequestParam(required = false) Integer age, @RequestParam(required = false) String address) {
+    String addNewUser(@RequestParam String name, @RequestParam(required = false) String surname, @RequestParam(required = false) Integer age, @RequestParam(required = false) String address) {
         User n = new User();
-        n.setId(id);
         n.setName(name);
         n.setSurname(surname);
         n.setAge(age);
@@ -26,24 +27,37 @@ public class UserController {
         userRepository.save(n);
         return "Saved";
     }
+
     @GetMapping("/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
+    public @ResponseBody
+    Iterable<User> getAllUsers() {
         return userRepository.findAll();
     }
-    @GetMapping("/get")
+
+    @GetMapping("/{userId}")
     public @ResponseBody
-    Optional<User> getCurrentUser(@RequestParam Integer id){
-        return userRepository.findById(id);
+    Optional<User> getCurrentUser(@PathVariable Integer userId) {
+        return userRepository.findById(userId);
     }
-    @GetMapping("/delete")
+
+    @DeleteMapping("/{userId}")
     public @ResponseBody
-    String deleteCurrentUser(@RequestParam Integer id){
-        userRepository.deleteById(id);
-        return "Deleted";
+    String deleteCurrentUser(@PathVariable Integer userId) {
+        try {
+            userRepository.deleteById(userId);
+            return "Deleted";
+        } catch (Exception ex) {
+            return "User not found for this id";
+        }
     }
-    @GetMapping("/updateName")
-    public @ResponseBody
-    String updateCurrentUser(@RequestParam String name){
-        return "Name updated";
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Integer userId, @Valid @RequestBody(required = false) User userDetails){
+        User n = userRepository.findById(userId);
+        n.setName(userDetails.getName());
+        n.setSurname(userDetails.getSurname());
+        n.setAge(userDetails.getAge());
+        n.setAddress(userDetails.getAddress());
+        final User updatedUser = userRepository.save(n);
+        return ResponseEntity.ok(updatedUser);
     }
 }
