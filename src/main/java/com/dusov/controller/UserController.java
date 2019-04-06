@@ -3,8 +3,8 @@ package com.dusov.controller;
 import com.dusov.entities.User;
 import com.dusov.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,12 +13,17 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/add")
     public @ResponseBody
-    String addNewUser(@RequestParam String name, @RequestParam(required = false) String surname, @RequestParam(required = false) Integer age, @RequestParam(required = false) String address) {
+    String addNewUser(@RequestParam(required = false) String name, @RequestParam(required = false) String surname,
+                      @RequestParam(required = false) Integer age, @RequestParam(required = false) String address) {
         User n = new User();
         n.setName(name);
         n.setSurname(surname);
@@ -35,9 +40,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public @ResponseBody
-    Optional<User> getCurrentUser(@PathVariable Integer userId) {
-        return userRepository.findById(userId);
+    public String getCurrentUser(@PathVariable Integer userId, Model model) {
+        Optional<User> user = userRepository.findById(userId);
+          if (user.isPresent()) {
+            model.addAttribute("user", user.get());
+          } else {
+              throw new IllegalArgumentException("User not found!");
+          }
+        return "user";
     }
 
     @DeleteMapping("/{userId}")
@@ -51,13 +61,17 @@ public class UserController {
         }
     }
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer userId, @Valid @RequestBody(required = false) User userDetails){
-        User n = userRepository.findById(userId);
-        n.setName(userDetails.getName());
-        n.setSurname(userDetails.getSurname());
-        n.setAge(userDetails.getAge());
-        n.setAddress(userDetails.getAddress());
-        final User updatedUser = userRepository.save(n);
-        return ResponseEntity.ok(updatedUser);
+    public String updateCurrentUser(@PathVariable Integer userId, @RequestParam(required = false) String name,
+                                    @RequestParam(required = false) String surname, @RequestParam(required = false) Integer age,
+                                    @RequestParam(required = false) String address, Model model){
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()){
+            User n = user.get();
+            n.setName(name);
+            n.setSurname(surname);
+            n.setAge(age);
+            n.setAddress(address);
+        }
+        return "user";
     }
 }
