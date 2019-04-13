@@ -16,7 +16,8 @@ public class PetController {
 
     @GetMapping("/add")
     public @ResponseBody
-    String addNewPet (@RequestParam String name, @RequestParam(required = false) String gender, @RequestParam(required = false) Integer age) {
+    String addNewPet (@RequestParam String name, @RequestParam(required = false) String gender,
+                      @RequestParam(required = false) Integer age) {
         Pet a = new Pet();
         a.setName(name);
         a.setAge(age);
@@ -28,15 +29,34 @@ public class PetController {
     public @ResponseBody Iterable<Pet> getAllPets() {
         return petRepository.findAll();
     }
-    @GetMapping("/petId")
+    @GetMapping("/{petId}")
     public @ResponseBody
     Optional<Pet> getCurrentPet(@PathVariable Integer petId){
         return petRepository.findById(petId);
     }
-    @DeleteMapping("/petId")
+    @DeleteMapping("/{petId}")
     public @ResponseBody
     String deleteCurrentUser(@PathVariable Integer petId){
         petRepository.deleteById(petId);
         return "Deleted";
+    }
+    @PutMapping("/{petId})")
+    public String updateCurrentPet(@PathVariable Integer petId, @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) String gender, @RequestParam(required = false) Integer age){
+        Optional<Pet> pet = petRepository.findById(petId);
+        if (pet.isPresent()){
+            Pet n = new Pet();
+            if (name != null){
+                n.setName(name);
+            }
+            if (age != null){
+                n.setAge(age);
+            }
+            if (gender != null){
+                n.setGender(gender);
+            }
+            petRepository.save(n);
+        }
+        return "Saved";
     }
 }

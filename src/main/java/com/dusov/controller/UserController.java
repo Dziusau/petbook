@@ -79,6 +79,7 @@ public class UserController {
             if (address != null) {
                 n.setAddress(address);
             }
+            userRepository.save(n);
         }
         return "user";
     }
