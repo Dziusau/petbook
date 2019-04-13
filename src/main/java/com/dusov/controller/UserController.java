@@ -67,10 +67,18 @@ public class UserController {
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()){
             User n = user.get();
-            n.setName(name);
+            if (name != null) {
+                n.setName(name);
+            }
+            if (surname != null){
             n.setSurname(surname);
-            n.setAge(age);
-            n.setAddress(address);
+            }
+            if (age != null) {
+                n.setAge(age);
+            }
+            if (address != null) {
+                n.setAddress(address);
+            }
         }
         return "user";
     }
