@@ -6,8 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.context.WebContext;
 
-import javax.validation.Valid;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -20,34 +25,31 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/add")
-    public @ResponseBody
-    String addNewUser(@RequestParam(required = false) String name, @RequestParam(required = false) String surname,
-                      @RequestParam(required = false) Integer age, @RequestParam(required = false) String address) {
-        User n = new User();
-        n.setName(name);
-        n.setSurname(surname);
-        n.setAge(age);
-        n.setAddress(address);
-        userRepository.save(n);
-        return "Saved";
-    }
-
-    @GetMapping("/all")
-    public @ResponseBody
-    Iterable<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
     @GetMapping("/{userId}")
     public String getCurrentUser(@PathVariable Integer userId, Model model) {
         Optional<User> user = userRepository.findById(userId);
-          if (user.isPresent()) {
+        if (user.isPresent()) {
             model.addAttribute("user", user.get());
-          } else {
-              throw new IllegalArgumentException("User not found!");
-          }
-        return "user";
+            return "get-user";
+        } else {
+            throw new IllegalArgumentException("User not found!");
+        }
+    }
+
+    @GetMapping("/all")
+    public String getAllUsers(Model model){
+        model.addAttribute("users", userRepository.findAll());
+        return "get-allUsers";
+    }
+
+    @PostMapping("/add")
+    public String addNewUserForm(Model model){
+        model.addAttribute("user", new User());
+        return "post-user";
+    }
+    @PostMapping("/post")
+    public String addNewUserSubmit(@ModelAttribute User user){
+        return "get-user";
     }
 
     @DeleteMapping("/{userId}")
@@ -80,7 +82,9 @@ public class UserController {
                 n.setAddress(address);
             }
             userRepository.save(n);
+        } else {
+            throw new IllegalArgumentException("User not found!");
         }
-        return "user";
+        return "get-user";
     }
 }

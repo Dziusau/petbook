@@ -56,6 +56,8 @@ public class PetController {
                 n.setGender(gender);
             }
             petRepository.save(n);
+        } else {
+            throw new IllegalArgumentException("Pet not found!");
         }
         return "Saved";
     }
